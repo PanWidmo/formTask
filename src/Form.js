@@ -1,35 +1,18 @@
 import React from 'react';
-import { Field, reduxForm } from 'redux-form';
+import { reduxForm } from 'redux-form';
+import { FormField } from 'components/FormField';
+import { DishTypeField } from 'components/DishTypeField';
+import { sendFormData } from 'api/sendFormData';
+import { convToNumber } from 'utils/convToNumber';
+import { timeFormat } from 'utils/form/timeFormat';
 
-const Form = (props) => {
-  const { handleSubmit, pristine, reset, submitting } = props;
+const Form = ({ handleSubmit, pristine, reset, submitting }) => {
   return (
     <form onSubmit={handleSubmit}>
-      <div>
-        <label>Name</label>
-        <div>
-          <Field name="name" component="input" type="text" placeholder="Name" />
-        </div>
-      </div>
-      <div>
-        <label>Preparation Time</label>
-        <div>
-          <Field name="preparationTime" component="input" type="text" placeholder="Preparation Time" />
-        </div>
-      </div>
-
-      <div>
-        <label>Type</label>
-        <div>
-          <Field name="type" component="select">
-            <option></option>
-            <option value="pizza">Pizza</option>
-            <option value="soup">Soup</option>
-            <option value="sandwich">Sandwich</option>
-          </Field>
-        </div>
-      </div>
-
+      <FormField label="Name" name="name" placeholder="Name" />
+      {/*formatowanie inputa*/}
+      <FormField label="Preparation Time" name="preparationTime" placeholder="Preparation Time" normalize={timeFormat} maxLength="8" />
+      <DishTypeField />
       <div>
         <button type="submit" disabled={pristine || submitting}>
           Submit
@@ -43,5 +26,12 @@ const Form = (props) => {
 };
 
 export default reduxForm({
-  form: 'simple', // a unique identifier for this form
+  form: 'form',
+  onSubmit: async (data) => {
+    await sendFormData({
+      ...data,
+      noOfSlices: convToNumber(data.noOfSlices),
+      diameter: convToNumber(data.diameter),
+    });
+  },
 })(Form);
