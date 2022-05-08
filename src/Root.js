@@ -1,10 +1,18 @@
 import './Root.css';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import Form from 'Form';
+import { Provider } from 'react-redux';
+import { store } from 'redux/index';
 
 function Root() {
   return (
-    <div className="App">
-      <p> Project Template </p>
-    </div>
+    <Provider store={store}>
+      <Router>
+        <Routes>
+          <Route path="/" element={<Form />} />
+        </Routes>
+      </Router>
+    </Provider>
   );
 }
 
